@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhp.dao.Dev_userDao" >
+	
+	<resultMap type="Dev_user" id="resultMapUser">
+    	<id property="id" column="id" />
+    	<result property="userRoleName" column="roleName" />
+    	<association property="role" column="userRole" javaType="Role">
+    		<id property="id" column="id"  />
+    		<result property="roleCode" column="roleCode"/>
+    		<result property="roleName" column="roleName"/>
+    		<result property="createdBy" column="createdBy"/>
+    		<result property="creationDate" column="creationDate"/>
+    		<result property="modifyBy" column="modifyBy"/>
+    		<result property="modifyDate" column="modifyDate"/>
+    	</association>
+    </resultMap>
+    
+	<!-- 登录 -->
+<!-- 	<select id="findByLogin" resultType="User" parameterType="User" >
+		SELECT 
+			su.* 
+		FROM 
+			smbms_user su 
+		WHERE 
+			userCode = #{userCode} AND userPassword = #{userPassword}
+	</select> -->
+    
+	<!-- 查询总条数 -->
+	<select id="findAllCount" resultType="Dev_user" parameterType="Dev_user" >
+		SELECT su.* 
+		FROM smbms_user su 
+	</select>
+	
+	<!-- 分页查询所有(用户名、用户角色) -->
+	<select id="findAllPageing" parameterType="Dev_user" resultMap="resultMapUser">
+		select 
+        	su.*, sr.roleName  
+        from 
+        	smbms_user su 
+        inner join 
+        	smbms_role sr on su.userRole = sr.id
+		<where>
+<!-- 		    <if test="userRole != null"> and su.userRole = #{userRole}</if>
+        	<if test="userName != null"> and su.userName like concat('%',#{userName},'%') </if>
+        	<if test="userName != null"> and su.userName like '%#{userName}%' </if> 
+        	<if test="userName != null"> and su.userName like '%${userName}%' </if> -->
+<!--         	<if test="user.userName != null">and userName = #{user.userName}</if> -->
+        	<if test="user.userName != null">and su.userName like '%${user.userName}%'</if>
+        	<if test="user.userRole != null">and su.userRole = #{user.userRole}</if>
+        </where>
+		limit #{totalRecord}, #{pageSize}
+	</select>
+	
+	<!-- 添加 -->
+	<insert id="save" >
+		 insert into smbms_user(id, userCode, userName, userPassword, gender, birthday, phone, address, userRole, createdBy, creationDate, modifyBy, modifyDate, idPicPath, idWebPath) 
+		 values (#{id}, #{userCode}, #{userName}, #{userPassword}, #{gender}, #{birthday}, #{phone}, #{address}, #{userRole}, #{createdBy}, #{creationDate}, #{modifyBy}, #{modifyDate}, #{idPicPath}, #{idWebPath})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="Dev_user">
+		UPDATE 
+			`smbms`.`smbms_user` 
+		<trim prefix="set"  suffixOverrides=",">
+			<if test="userCode != null">`userCode`=#{userCode}, </if>
+			<if test="userName != null">`userName`=#{userName},  </if>
+			<if test="userPassword != null">`userPassword`=#{userPassword},  </if>
+			<if test="gender != null">`gender`=#{gender},  </if>
+			<if test="birthday != null">`birthday`=#{birthday},  </if>
+			<if test="phone != null">`phone`=#{phone},  </if>
+			<if test="address != null">`address`=#{address},  </if>
+			<if test="userRole != null">`userRole`=#{userRole},  </if>
+			<if test="createdBy != null">`createdBy`=#{createdBy},  </if>
+			<if test="creationDate != null">`creationDate`=#{creationDate},  </if>
+			<if test="modifyBy != null">`modifyBy`=#{modifyBy}, </if>
+			<if test="modifyDate != null">`modifyDate`=#{modifyDate},  </if>
+			<if test="idPicPath != null">`idPicPath`=#{idPicPath},  </if>
+			<if test="workPicPath != null">`workPicPath`=#{workPicPath},  </if>
+		</trim>
+		WHERE `id`=#{id};
+	</update>
+	
+</mapper>

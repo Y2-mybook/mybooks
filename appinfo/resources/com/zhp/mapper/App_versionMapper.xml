@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhp.dao.BillDao" >
+<!-- 
+	<resultMap type="Bill" id="resultMapBill">
+    	<id property="id" column="id" />
+    	<result property="billproName" column="proName" />
+    	<association property="provider" column="providerId" javaType="Provider">
+    		<id property="id" column="id"  />
+    		<result property="proCode" column="proCode"/>
+    		<result property="proName" column="proName"/>
+    		<result property="proDesc" column="proDesc"/>
+    		<result property="proContact" column="proContact"/>
+    		<result property="proPhone" column="proPhone"/>
+    		<result property="proAddress" column="proAddress"/>
+    		<result property="proFax" column="proFax"/>
+    		<result property="createdBy" column="createdBy"/>
+    		<result property="creationDate" column="creationDate"/>
+    		<result property="modifyBy" column="modifyBy"/>
+    		<result property="modifyDate" column="modifyDate"/>
+    	</association>
+    </resultMap> -->
+
+	<select id="findObject" resultType="Bill" parameterType="Bill" >
+		SELECT sb.* 
+		FROM smbms_bill sb 
+	</select>
+
+	<select id="findAllPageing" parameterType="Bill" resultMap="resultMapBill" >
+		SELECT sb.*, sp.`proName` 
+		FROM smbms_bill sb 
+		INNER JOIN smbms_provider sp ON sp.id = sb.`providerId`
+<!-- 		<where>
+        	<if test="user.userName != null">and su.userName like '%${user.userName}%'</if>
+        	<if test="user.userRole != null">and su.userRole = #{user.userRole}</if>
+        </where> -->
+		limit #{totalRecord}, #{pageSize}
+	</select>
+	
+</mapper>

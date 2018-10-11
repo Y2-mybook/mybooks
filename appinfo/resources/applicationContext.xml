@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Application context definition for JPetStore's business layer.
+  - Contains bean references to the transaction manager and to the DAOs in
+  - dataAccessContext-local/jta.xml (see web.xml's "contextConfigLocation").
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+			http://www.springframework.org/schema/context
+    		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+    		">
+			
+	<!-- 引入 datasource.properties 文件 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+		<property name="location">
+			<value>classpath:datasource.properties</value>
+		</property>
+	</bean>
+	
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" >
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
+	</bean>
+	
+	<!-- 配置SQLSessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" >
+        <!-- 引用数据源组件 -->
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:mybatis.xml" />
+        <property name="typeAliasesPackage" value="com.zhp.entity" />
+        <!-- 引用MyBatis配置文件中的配置 -->
+        <property name="mapperLocations">
+        	<list>
+				<value>classpath:com/zhp/mapper/*.xml</value>
+        	</list>
+        </property>
+    </bean>
+	
+	<!-- dao -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+        <property name="basePackage" value="com.zhp.dao" />
+    </bean>
+    
+	<!-- 开启注解  -->
+    <context:component-scan base-package="com.zhp.service" />
+	
+	<!-- 事务管理器 -->
+	<bean id="tx" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 配置事务 -->
+	<tx:advice id="advice" transaction-manager="tx" >
+		<tx:attributes>
+			<tx:method name="save*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="insert*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="add*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="update*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="delete*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="modify*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="regist*" read-only="false" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="get*" read-only="true" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="search*" read-only="true" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="find*" read-only="true" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="select*" read-only="true" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="login*" read-only="true" propagation="REQUIRED" isolation="DEFAULT"/>
+			<tx:method name="*" read-only="true" propagation="REQUIRED" isolation="DEFAULT"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 定义切面 -->
+	<aop:config>
+		<aop:pointcut id="pointcut" expression="execution(* com.zhp.sevice.impl..*.*(..))"/>
+		<aop:advisor advice-ref="advice" pointcut-ref="pointcut" />
+	</aop:config>
+
+	
+</beans>

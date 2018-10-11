@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhp.dao.RoleDao" >
+	
+	<!-- 删除 -->
+<!-- 	<delete id="delete">
+		delete from smbms_role 
+		WHERE createdBy = #{createdBy};
+	</delete> -->
+	
+	<!-- 修改 -->
+<!-- 	<update id="update" parameterType="Role" >
+		update smbms_role 
+		<trim prefix="set"  suffixOverrides=",">
+			<if test="id != null">`id`=#{id}, </if>
+			<if test="roleCode != null">`roleCode`=#{roleCode},  </if>
+			<if test="roleName != null">`roleName`=#{roleName},  </if>
+			<if test="createdBy != null">`createdBy`=#{createdBy},  </if>
+			<if test="creationDate != null">`creationDate`=#{creationDate},  </if>
+			<if test="modifyBy != null">`modifyBy`=#{modifyBy},  </if>
+			<if test="modifyDate != null">`modifyDate`=#{modifyDate},  </if>
+		</trim>
+		where createdBy = #{createdBy}
+	</update> -->
+	
+	<!-- 按条件查询 -->
+	<select id="findObject" resultType="Role" >
+		select 
+			sr.* 
+		from 
+			smbms_role sr
+<!-- 		<where>
+        	<if test="role.createdBy != null">and createdBy = #{role.createdBy}</if>
+        </where> -->
+	</select>
+	
+	<!-- 分页查询 -->
+	<select id="findAllPageing" parameterType="Role" resultType="Role">
+		SELECT sr.* 
+		FROM smbms_role sr 
+<!-- 		<where>
+        	<if test="user.userCode != null">and userCode = #{user.userCode}</if>
+        	<if test="user.userRole != null">and userRole like '%${user.userRole}%'</if>
+        </where> -->
+		limit #{totalRecord}, #{pageSize}
+	</select>
+</mapper>
+
